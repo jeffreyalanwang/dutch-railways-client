@@ -1,5 +1,4 @@
 import jdk.internal.jshell.debug.InternalDebugControl.release
-import jdk.internal.vm.vector.VectorSupport.test
 import org.gradle.kotlin.dsl.kotlin
 import java.lang.module.ModuleFinder.compose
 
@@ -81,8 +80,8 @@ dependencies {
     implementation(libs.kotlinx.datetime)
 
     implementation(libs.maps.compose)
-    implementation(libs.kt.fuzzy)
     implementation(libs.reorderable)
+    implementation("com.jeffreyalanwang.dutchrailways.lib:schema")
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
