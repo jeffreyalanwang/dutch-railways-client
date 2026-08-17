@@ -29,7 +29,7 @@ import com.jeffreyalanwang.dutchrailways.client.android.R
 import com.jeffreyalanwang.dutchrailways.client.android.backend.AppSettingsProvider
 import com.jeffreyalanwang.dutchrailways.client.android.backend.Geocoding
 import com.jeffreyalanwang.dutchrailways.client.android.backend.LocalAppSettings
-import com.jeffreyalanwang.dutchrailways.client.android.ui.theme.dutchrailways.client.androidTheme
+import com.jeffreyalanwang.dutchrailways.client.android.ui.theme.DutchRailwaysAndroidClientTheme
 import com.jeffreyalanwang.dutchrailways.client.android.ui.util.RefreshKeyState
 import com.jeffreyalanwang.dutchrailways.client.android.ui.util.bottomOnly
 import com.jeffreyalanwang.dutchrailways.client.android.ui.util.rememberNavBackStack

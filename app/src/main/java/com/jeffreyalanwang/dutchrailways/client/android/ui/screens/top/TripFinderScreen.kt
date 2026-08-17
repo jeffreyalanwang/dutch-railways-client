@@ -604,7 +604,7 @@ private fun RevealableBottomSheet(
         if (isVisible) sheetState.partialExpand()
         else sheetState.hide()
     }
-
+    
     BottomSheet(
         state = sheetState,
         shadowElevation = ON_MAP_SHADOW_ELEVATION,

@@ -7,6 +7,7 @@ plugins {
     alias(androidLibs.plugins.kotlin.parcelize)
     alias(androidLibs.plugins.kotlin.serialization)
     alias(androidLibs.plugins.secrets)
+    alias(androidLibs.plugins.apollo)
 }
 
 kotlin {
@@ -65,11 +66,12 @@ dependencies {
     androidTestImplementation(platform(androidLibs.androidx.compose.bom))
     implementation(androidLibs.bundles.androidx.compose)
     testImplementation(androidLibs.bundles.androidx.compose.test)
-    debugImplementation(androidLibs.bundles.androidx.compose.tooling)
+    debugImplementation(androidLibs.bundles.androidx.compose.debug)
 
     implementation(androidLibs.androidx.activity.compose)
     implementation(androidLibs.bundles.androidx.navigation3)
     implementation(androidLibs.androidx.datastore)
+    implementation(androidLibs.androidx.graphics.shapes)
     implementation(androidLibs.androidx.core.ktx)
     implementation(androidLibs.androidx.lifecycle.runtime.ktx)
     implementation(androidLibs.androidx.appcompat)
@@ -80,6 +82,7 @@ dependencies {
 
     implementation(androidLibs.maps.compose)
     implementation(androidLibs.reorderable)
+    implementation(androidLibs.apollo)
     implementation("com.jeffreyalanwang.dutchrailways.lib:schema")
 
     testImplementation(androidLibs.junit)

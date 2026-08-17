@@ -85,7 +85,7 @@ inline fun <reified T: Place> ExpandedSearch(
         searchBarState = searchBarState,
         modifier = modifier,
         onClose = onClose,
-        onSelectResult = onSelectResult,
+        onSelectResult = { onSelectResult(it as T?) },
         onClearedText = onClearedText,
     ) { place, onClick ->
         SearchResult(place, onClick)

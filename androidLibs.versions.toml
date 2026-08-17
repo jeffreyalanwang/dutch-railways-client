@@ -19,6 +19,9 @@ mockk = "1.14.11"
 uiautomator = "2.3.0"
 datastore = "1.2.1"
 kotlinxSerializationJson = "1.9.0"
+apollo = "5.0.1"
+graphicsLib = "1.1.0"
+material3 = "1.5.0-alpha18" # we used experimental APIs that have changed since
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -26,10 +29,12 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
+apollo = { id = "com.apollographql.apollo", version.ref = "apollo" }
 
 [libraries]
 
 secrets-plugin = { group = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", name = "secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
+apollo = { group = "com.apollographql.apollo", name = "apollo-runtime", version.ref = "apollo" }
 
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinReflect" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
@@ -42,6 +47,7 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleViewmodel" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
+androidx-graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", version.ref = "graphicsLib" }
 
 androidx-navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3" }
 androidx-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
@@ -56,8 +62,9 @@ androidx-compose-animation-core = { group = "androidx.compose.animation", name =
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-ui-unit = { group = "androidx.compose.ui", name = "ui-unit" }
 androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-androidx-compose-material3-adaptive-navigation-suite = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite" }
+
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+androidx-compose-material3-adaptive-navigation-suite = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite", version.ref = "material3" }
 
 reorderable = { group = "sh.calvin.reorderable", name = "reorderable", version = "3.1.0" }
 kt-fuzzy = { module = "ca.solo-studios:kt-fuzzy", version = "0.1.0" }
@@ -88,14 +95,14 @@ androidx-compose = [
     "androidx-compose-ui-graphics",
     "androidx-compose-material3",
     "androidx-compose-material3-adaptive-navigation-suite",
+    "androidx-compose-ui-tooling-preview",
 ]
 androidx-compose-test = [
     "androidx-compose-ui-test",
     "androidx-compose-ui-test-junit4",
 ]
-androidx-compose-tooling = [
+androidx-compose-debug = [
     "androidx-compose-ui-tooling",
-    "androidx-compose-ui-tooling-preview",
     "androidx-compose-ui-test-manifest",
 ]
 androidx-navigation3 = [

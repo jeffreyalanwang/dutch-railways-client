@@ -3,7 +3,6 @@
 package com.jeffreyalanwang.dutchrailways.client.android.backend
 import android.content.res.Resources
 import android.util.Log
-import ca.solostudios.fuzzykt.FuzzyKt
 import com.google.android.gms.maps.model.LatLng
 import com.jeffreyalanwang.dutchrailways.client.android.Area
 import com.jeffreyalanwang.dutchrailways.client.android.Journey
@@ -14,7 +13,6 @@ import com.jeffreyalanwang.dutchrailways.client.android.Station
 import com.jeffreyalanwang.dutchrailways.client.android.TrainAmenity
 import com.jeffreyalanwang.dutchrailways.client.android.Trainset
 import com.jeffreyalanwang.dutchrailways.client.android.lastStationName
-import com.jeffreyalanwang.dutchrailways.client.android.ui.util.AppStringFormats
 import com.jeffreyalanwang.dutchrailways.client.android.compareTo
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDateTime
@@ -22,11 +20,8 @@ import kotlinx.datetime.toJavaLocalDateTime
 import java.time.ZoneId
 import kotlin.collections.map
 import kotlin.collections.sortedWith
-import kotlin.math.max
 import kotlin.reflect.KClass
 import kotlin.time.Instant
-import ca.solostudios.fuzzykt.FuzzyKt.ratio as fuzzratio
-
 
 private fun parseAmsTime(s: String)
     = LocalDateTime.parse(s)
@@ -39,8 +34,6 @@ private fun parseAmsTime(s: String)
 //    .build()
 
 object BackendApi {
-    private const val BACKEND_URL = "http://msword-jw125.duckdns.org"
-
     private val dummyPassServices = mutableListOf(
         PassService(
             119,
@@ -70,30 +63,12 @@ object BackendApi {
         ),
     )
     private val dummyAreas = mutableListOf(
-        Area(
-            1,
-            "Nederland"
-        ),
-        Area(
-            10,
-            "Noord-Holland"
-        ),
-        Area(
-            9,
-            "Zuid-Holland"
-        ),
-        Area(
-            319,
-            "Rotterdam"
-        ),
-        Area(
-            287,
-            "'s-Gravenhage"
-        ),
-        Area(
-            145,
-            "Amsterdam"
-        ),
+        Area(1, "Nederland"),
+        Area(10, "Noord-Holland"),
+        Area(9, "Zuid-Holland"),
+        Area(319, "Rotterdam"),
+        Area(287, "'s-Gravenhage"),
+        Area(145, "Amsterdam"),
     )
     private val dummyStations = mutableListOf(
         Station(
@@ -116,61 +91,23 @@ object BackendApi {
         ),
     )
 
-    fun <T: Place> autocomplete_place(cls: KClass<T>, query: String): List<T> { //TODO this should not be loading entire stations. just the data we need
+    fun <T: Place> autocomplete_place(cls: KClass<T>, query: String) = buildList {
         Log.d("BackendApi", "autocomplete_place: cls=$cls, query=$query")
-        val candidates = ArrayList<Pair<Place, Double>>()
-
         if (cls.java.isAssignableFrom(Station::class.java)) {
-            candidates.addAll(dummyStations.map {  it to max(
-                FuzzyKt.partialRatio(query, it.name),
-                FuzzyKt.partialRatio(query, it.address),
-            )})
+            addAll(dummyStations)
         }
-
         if (cls.java.isAssignableFrom(Area::class.java)) {
-            candidates.addAll(dummyAreas.map {
-                it to FuzzyKt.partialRatio(query, it.name)
-            })
+            addAll(dummyAreas)
         }
-
-        return candidates.sortedByDescending { it.second }.take(10).map { it.first } as List<T>
     }
 
-    fun autocomplete_pass_service(query: String): List<PassService> {
+    fun autocomplete_pass_service(query: String) = dummyPassServices.toList().also {
         Log.d("BackendApi", "autocomplete_pass_service: query=$query")
-        return dummyPassServices
-            .sortedByDescending {
-                maxOf(
-                    FuzzyKt.partialRatio(query, it.title),
-                    FuzzyKt.partialRatio(query, AppStringFormats.Time(it.getStops().first().departure!!)),
-                    FuzzyKt.partialRatio(query, AppStringFormats.Time(it.getStops().last().arrival!!)),
-                    FuzzyKt.partialRatio(query, it.trainset.name),
-                )
-            }
     }
-    fun autocomplete_place_or_pass_service(query: String): List<Any> {
-        val passResults =
-            autocomplete_pass_service(query)
-                .map {
-                    it to maxOf(
-                        FuzzyKt.partialRatio(query, it.title),
-                        FuzzyKt.partialRatio(query, it.getStops().first().getStation().name),
-                    )
-                }
-        val placeResults = autocomplete_place(Place::class, query)
-                .map {
-                    it to when (it) {
-                        is Area -> fuzzratio(query, it.name)
-                        is Station -> maxOf(
-                            FuzzyKt.partialRatio(query, it.name),
-                            FuzzyKt.partialRatio(query, it.address),
-                        )
-                    }
-                }
-        return (passResults + placeResults)
-            .sortedByDescending { it.second }
-            .take(10)
-            .map { it.first }
+
+    fun autocomplete_place_or_pass_service(query: String) = buildList<Any> {
+        addAll(autocomplete_pass_service(query))
+        addAll(autocomplete_place(Place::class, query))
     }
 
     fun get_pass_service(id: Int): PassService {
