@@ -1,0 +1,246 @@
+package com.jeffreyalanwang.dutchrailways.client.android.ui.screens.child.detail
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContent
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.jeffreyalanwang.dutchrailways.client.android.backend.BackendApi
+import com.jeffreyalanwang.dutchrailways.client.android.PassService
+import com.jeffreyalanwang.dutchrailways.client.android.ServiceStop
+import com.jeffreyalanwang.dutchrailways.client.android.getCurrStop
+import com.jeffreyalanwang.dutchrailways.client.android.ui.StationDetailNavArgs
+import com.jeffreyalanwang.dutchrailways.client.android.ui.components.AmenityBadgeSet
+import com.jeffreyalanwang.dutchrailways.client.android.ui.components.CardContentScaffold
+import com.jeffreyalanwang.dutchrailways.client.android.ui.components.DiscreteGridControl
+import com.jeffreyalanwang.dutchrailways.client.android.ui.components.DiscreteGridRow
+import com.jeffreyalanwang.dutchrailways.client.android.ui.components.LineSegmentWithPoint
+import com.jeffreyalanwang.dutchrailways.client.android.ui.components.NavBackButton
+import com.jeffreyalanwang.dutchrailways.client.android.ui.util.AppIcons
+import com.jeffreyalanwang.dutchrailways.client.android.ui.util.AppStringFormats
+import com.jeffreyalanwang.dutchrailways.client.android.ui.util.horizontalOnly
+import com.jeffreyalanwang.dutchrailways.client.android.ui.util.providesWindowInsets
+import com.jeffreyalanwang.dutchrailways.client.android.ui.util.verticalOnly
+import kotlinx.coroutines.launch
+import java.time.ZonedDateTime
+
+@Preview
+@Composable
+private fun PassServiceDetailPreview() {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarEffectScope = rememberCoroutineScope()
+
+    PassServiceDetailScreen(
+        BackendApi.get_pass_service(119),
+        onNavigate = { stationNavArgs ->
+            snackbarEffectScope.launch {
+                snackbarHostState.showSnackbar(
+                    stationNavArgs.toString(),
+                    withDismissAction = true
+                )
+            }
+        },
+        onNavigateBack = {
+            snackbarEffectScope.launch {
+                snackbarHostState.showSnackbar(
+                    "Back",
+                    withDismissAction = true
+                )
+            }
+        },
+    )
+
+    SnackbarHost(hostState = snackbarHostState)
+}
+
+@Composable
+fun PassServiceDetailScreen(
+    service: PassService,
+    onNavigate: (StationDetailNavArgs) -> Unit,
+    onNavigateBack: () -> Unit,
+    actionsSlot: @Composable (RowScope.() -> Unit)? = null,
+) {
+    CardContentScaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Train") },
+                navigationIcon = { NavBackButton(onNavigateBack) },
+                actions = actionsSlot ?: {},
+            )
+        },
+    ) {
+        PassServiceDetail(
+            service,
+            onNavigate,
+            Modifier.padding(vertical = 20.dp)
+        )
+    }
+}
+
+@Composable
+fun PassServiceDetail(
+    service: PassService,
+    onNavigate: (StationDetailNavArgs) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val stops = remember { service.getStops() }
+    var isHeaderExpanded by remember { mutableStateOf(false) }
+    var amenityBadgesBounds by WindowInsets.safeContent.let { remember { mutableStateOf(it) } }
+
+    Column(modifier.fillMaxWidth().providesWindowInsets { amenityBadgesBounds = it }) {
+        Row(
+            Modifier.clickable(null, null) { isHeaderExpanded = true },
+            verticalAlignment = Alignment.Bottom,
+        ) {
+            // Icon (based on rolling stock)
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                AnimatedVisibility (
+                    isHeaderExpanded,
+                    Modifier
+                        .heightIn(max = 0.dp)
+                        .wrapContentHeight(unbounded = true)
+                        .padding(bottom = 4.dp),
+                    fadeIn() + slideInVertically { it / 2 },
+                    fadeOut() + slideOutVertically { it / 2 },
+                ) {
+                    Text(service.trainset.name)
+                }
+                Icon(
+                    painterResource(AppIcons.Trainset(service.trainset)),
+                    "Train icon",
+                    Modifier
+                        .size(72.dp + 20.dp)
+                )
+            }
+
+            // Amenities
+            AmenityBadgeSet(
+                service.amenities,
+                containerModifier = Modifier.offset(x = -25.dp, y = -7.5.dp),
+                isExpanded = isHeaderExpanded,
+                onSetExpanded = { isHeaderExpanded = it },
+                windowInsets = amenityBadgesBounds,
+            )
+        }
+
+        // Name
+        Text(
+            service.title,
+            style=MaterialTheme.typography.displaySmall,
+            modifier=Modifier.padding(horizontal=10.dp)
+        )
+
+        Spacer(Modifier.height(10.dp))
+
+        // Stops (arrive; depart; station)
+        Stops(stops, onNavigate, padding=PaddingValues(horizontal=10.dp))
+    }
+}
+
+@Composable
+private fun Stops(
+    stops: List<ServiceStop>,
+    onNavigate: (StationDetailNavArgs)-> Unit,
+    modifier: Modifier = Modifier,
+    padding: PaddingValues = PaddingValues.Zero,
+) {
+    val currStopState by remember { mutableIntStateOf(getCurrStop(stops).index) }
+    val timetableGridControl = remember(stops) { DiscreteGridControl() }
+    // TODO on stop departure, update currStopState and set the timer for the next stop down
+
+    Column(modifier.padding(padding.verticalOnly())) {
+        stops.forEachIndexed { i, stop ->
+            Stop(
+                arriveTime = if (i == 0)            null else stop.arrival,
+                departTime = if (i == stops.size-1) null else stop.departure,
+                stationName = stop.getStation().name,
+                isCurrStop = (i == currStopState),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        onNavigate(StationDetailNavArgs(stop.stationId))
+                    }
+                    .padding(padding.horizontalOnly()),
+                discreteGridControl = timetableGridControl,
+            )
+        }
+    }
+}
+
+@Composable
+private fun Stop(
+    stationName: String,
+    arriveTime: ZonedDateTime?,
+    departTime: ZonedDateTime?,
+    isCurrStop: Boolean,
+    discreteGridControl: DiscreteGridControl,
+    modifier: Modifier = Modifier,
+    itemPadding: Dp = 5.dp,
+    lineWidth: Dp = 20.dp,
+) {
+    val isFirstStop = arriveTime == null
+    val isLastStop  = departTime == null
+
+    Row(modifier.height(IntrinsicSize.Min)) {
+        LineSegmentWithPoint(
+            lineThickness = lineWidth,
+            isStart = isFirstStop,
+            isEnd = isLastStop,
+            isPointHighlighted = isCurrStop,
+        )
+        Spacer(Modifier.width(5.dp))
+        Column(Modifier.weight(1f)) { // TODO text color by time
+            if (!isFirstStop) Spacer(Modifier.height(itemPadding))
+            Text(stationName, fontWeight = FontWeight.Bold)
+            DiscreteGridRow(discreteGridControl, gap = 10.dp, content = {
+                if (isFirstStop) Spacer(Modifier) else Text(
+                    "Arrival: ${AppStringFormats.Time(arriveTime)}",
+                    Modifier.alpha(.5f),
+                )
+                if (isLastStop) Spacer(Modifier) else Text(
+                    "Departure: ${AppStringFormats.Time(departTime)}",
+                    Modifier.alpha(.5f)
+                )
+            })
+            if (!isLastStop) Spacer(Modifier.height(itemPadding))
+        }
+    }
+}

@@ -1,12 +1,18 @@
+import jdk.internal.jshell.debug.InternalDebugControl.release
+import jdk.internal.vm.vector.VectorSupport.test
+import org.gradle.kotlin.dsl.kotlin
+import java.lang.module.ModuleFinder.compose
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    id("kotlin-parcelize")
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
-    kotlin("plugin.serialization") version "2.4.0"
+    alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.secrets)
 }
 
 kotlin {
+    jvmToolchain(21)
     compilerOptions {
         optIn.add("kotlin.time.ExperimentalTime")
         optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
@@ -18,13 +24,13 @@ kotlin {
 }
 
 android {
-    namespace = "com.jeffreyalanwang.dutchrailwaysandroidclient"
+    namespace = "com.jeffreyalanwang.dutchrailways.client.android"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.jeffreyalanwang.dutchrailwaysandroidclient"
+        applicationId = "com.jeffreyalanwang.dutchrailways.client.android"
         minSdk = 35
         targetSdk = 36
         versionCode = 1
@@ -50,10 +56,6 @@ android {
             enableAndroidTestCoverage = true
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
     buildFeatures {
         compose = true
         buildConfig = true
@@ -61,55 +63,33 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.compose.animation)
-    implementation(libs.androidx.compose.animation.core)
-    implementation(libs.androidx.compose.foundation.layout)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.runtime)
-    implementation(libs.androidx.compose.ui.unit)
-    implementation(libs.androidx.datastore)
-    implementation(libs.androidx.foundation.layout)
-    implementation(libs.androidx.runtime)
-    implementation(libs.androidx.ui.graphics)
     implementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    implementation(libs.bundles.androidx.compose)
+    testImplementation(libs.bundles.androidx.compose.test)
+    debugImplementation(libs.bundles.androidx.compose.tooling)
+
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.compose.foundation)
-    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.bundles.androidx.navigation3)
+    implementation(libs.androidx.datastore)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.material3)
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.navigation3.runtime)
-    implementation(libs.androidx.navigation3.ui)
-    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
-    implementation(libs.androidx.ui.unit)
-    implementation(libs.androidx.uiautomator)
-    implementation(libs.foundation.layout)
-    implementation(libs.kotlinx.collections.immutable)
     implementation(libs.androidx.appcompat)
+    implementation(libs.kotlinx.collections.immutable)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.maps.compose)
-    implementation(libs.kt.fuzzy)
     implementation(libs.kotlin.reflect)
     implementation(libs.kotlinx.datetime)
+
+    implementation(libs.maps.compose)
+    implementation(libs.kt.fuzzy)
     implementation(libs.reorderable)
-    implementation(libs.runtime)
-    implementation(libs.ui)
-    implementation(libs.ui.graphics)
+
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.mockkandroid)
     androidTestImplementation(libs.androidx.compose.ui.test)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.ui.tooling)
+    androidTestImplementation(libs.androidx.uiautomator)
 }
