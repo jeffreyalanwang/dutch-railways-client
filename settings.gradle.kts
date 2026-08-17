@@ -19,6 +19,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
+    versionCatalogs.create("androidLibs").from(files("androidLibs.versions.toml"))
 }
 
 includeBuild("../lib")

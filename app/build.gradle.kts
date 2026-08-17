@@ -1,13 +1,12 @@
-import jdk.internal.jshell.debug.InternalDebugControl.release
 import org.gradle.kotlin.dsl.kotlin
 import java.lang.module.ModuleFinder.compose
 
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.parcelize)
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.secrets)
+    alias(androidLibs.plugins.android.application)
+    alias(androidLibs.plugins.kotlin.compose)
+    alias(androidLibs.plugins.kotlin.parcelize)
+    alias(androidLibs.plugins.kotlin.serialization)
+    alias(androidLibs.plugins.secrets)
 }
 
 kotlin {
@@ -62,33 +61,33 @@ android {
 }
 
 dependencies {
-    implementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    implementation(libs.bundles.androidx.compose)
-    testImplementation(libs.bundles.androidx.compose.test)
-    debugImplementation(libs.bundles.androidx.compose.tooling)
+    implementation(platform(androidLibs.androidx.compose.bom))
+    androidTestImplementation(platform(androidLibs.androidx.compose.bom))
+    implementation(androidLibs.bundles.androidx.compose)
+    testImplementation(androidLibs.bundles.androidx.compose.test)
+    debugImplementation(androidLibs.bundles.androidx.compose.tooling)
 
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.bundles.androidx.navigation3)
-    implementation(libs.androidx.datastore)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.kotlinx.collections.immutable)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.kotlin.reflect)
-    implementation(libs.kotlinx.datetime)
+    implementation(androidLibs.androidx.activity.compose)
+    implementation(androidLibs.bundles.androidx.navigation3)
+    implementation(androidLibs.androidx.datastore)
+    implementation(androidLibs.androidx.core.ktx)
+    implementation(androidLibs.androidx.lifecycle.runtime.ktx)
+    implementation(androidLibs.androidx.appcompat)
+    implementation(androidLibs.kotlinx.collections.immutable)
+    implementation(androidLibs.kotlinx.serialization.json)
+    implementation(androidLibs.kotlin.reflect)
+    implementation(androidLibs.kotlinx.datetime)
 
-    implementation(libs.maps.compose)
-    implementation(libs.reorderable)
+    implementation(androidLibs.maps.compose)
+    implementation(androidLibs.reorderable)
     implementation("com.jeffreyalanwang.dutchrailways.lib:schema")
 
-    testImplementation(libs.junit)
-    testImplementation(libs.mockk)
-    testImplementation(libs.kotlinx.coroutines.test)
-    androidTestImplementation(libs.mockkandroid)
-    androidTestImplementation(libs.androidx.compose.ui.test)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.uiautomator)
+    testImplementation(androidLibs.junit)
+    testImplementation(androidLibs.mockk)
+    testImplementation(androidLibs.kotlinx.coroutines.test)
+    androidTestImplementation(androidLibs.mockkandroid)
+    androidTestImplementation(androidLibs.androidx.compose.ui.test)
+    androidTestImplementation(androidLibs.androidx.espresso.core)
+    androidTestImplementation(androidLibs.androidx.junit)
+    androidTestImplementation(androidLibs.androidx.uiautomator)
 }
